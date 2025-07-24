@@ -15,13 +15,13 @@ const Navigation = () =>
 
   return (
     <>
-        <nav className="w-full bg-white flex items-center py-4 px-6 shadow-md rounded-b-lg">
+        <nav className="w-full bg-gray-900 flex items-center py-4 px-6 shadow-md shadow-black/50 rounded-b-lg transition-colors duration-300 ease-in-out">
             <div className='flex flex-grow justify-start items-center gap-x-8 mx-5'>
-                <Link className="text-2xl font-semibold mx-5 text-gray-700 hover:text-blue-600 transition-colors duration-200" to="/dashboard">Dashboard</Link>
-                <Link className="text-2xl font-semibold mx-5 text-gray-700 hover:text-blue-600 transition-colors duration-200" to="/history">History</Link>
+                <Link className="text-2xl font-semibold mx-5 !text-gray-300 hover:!text-blue-400 transition-colors duration-200" to="/dashboard">Dashboard</Link>
+                <Link className="text-2xl font-semibold mx-5 !text-gray-300 hover:!text-blue-400 transition-colors duration-200" to="/history">History</Link>
             </div>
 
-            <CgProfile onClick={toggleCart} className='text-6xl text-black p-1 rounded-full hover:bg-gray-200 hover:cursor-pointer transition-all duration-200 ml-auto'/>
+            <CgProfile onClick={toggleCart} className='text-6xl text-white p-1 rounded-full hover:text-blue-400 hover:cursor-pointer transition-all duration-200 ml-auto'/>
         </nav>
         
         {isProfileClicked && <ProfileDropdown/>}
