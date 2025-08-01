@@ -2,11 +2,14 @@ import { Link, Outlet } from 'react-router-dom'
 import ProfileDropdown from '../components/profile-dropdown';
 
 import { CgProfile } from "react-icons/cg";
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+
+import { UserContext } from '../contexts/user.context';
 
 const Navigation = () => 
 {
     const [isProfileClicked, setProfileClicked] = useState(false);
+    const { currentUser } = useContext(UserContext);
 
     const toggleCart = (): void => 
     {
@@ -21,7 +24,11 @@ const Navigation = () =>
                 <Link className="text-2xl font-semibold mx-5 !text-gray-300 hover:!text-blue-400 transition-colors duration-200" to="/history">History</Link>
             </div>
 
-            <CgProfile onClick={toggleCart} className='text-6xl text-white p-1 rounded-full hover:text-blue-400 hover:cursor-pointer transition-all duration-200 ml-auto'/>
+            {currentUser == null ? 
+                                    <Link className="text-2xl font-semibold mx-5 !text-gray-300 hover:!text-blue-400 transition-colors duration-200" to="/login">Sign In</Link> :
+                                    <CgProfile onClick={toggleCart} className='text-6xl text-white p-1 rounded-full hover:text-blue-400 hover:cursor-pointer transition-all duration-200 ml-auto'/>
+            }
+            
         </nav>
         
         {isProfileClicked && <ProfileDropdown/>}
