@@ -4,17 +4,49 @@
 
 // Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+import { createClient } from "npm:@supabase/supabase-js"
 
-console.log("Hello from Functions!")
+const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+type queryResult = 
+{
+    email: string;
+}
 
 Deno.serve(async (req) => {
-  const { name } = await req.json()
-  const data = {
-    message: `Hello ${name}!`,
+  const { username } = await req.json()
+  const { data , error } = await supabase
+    .from("Usernames")
+    .select("user:auth.users ( email )")
+    .eq("username", username)
+    .limit(1)
+    .maybeSingle();
+
+  if (error)
+  {
+      return new Response(
+        JSON.stringify({error: error.message}),
+        { status: 500, headers: { "Content-Type": "application/json" } },
+      );
+  }
+
+  if (!data)
+  {
+      return new Response(
+        JSON.stringify({error: "User not found"}),
+        { status: 404, headers: { "Content-Type": "application/json" }}
+      )
+  }
+
+  const finalData: queryResult = {
+    email: data.user.email,
   }
 
   return new Response(
-    JSON.stringify(data),
+    JSON.stringify(finalData),
     { headers: { "Content-Type": "application/json" } },
   )
 })
