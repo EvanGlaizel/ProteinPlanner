@@ -9,7 +9,11 @@ import { UserContext } from '../contexts/user.context';
 const Navigation = () => 
 {
     const [isProfileClicked, setProfileClicked] = useState(false);
-    const { currentUser } = useContext(UserContext);
+
+    // User context
+    const userContext = useContext(UserContext);
+    if (!userContext) { throw new Error("Error: userContext is undefined") }
+    const { currentUser } = userContext;
 
     const toggleCart = (): void => 
     {
