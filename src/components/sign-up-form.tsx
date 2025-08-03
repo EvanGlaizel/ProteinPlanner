@@ -1,4 +1,5 @@
 import { useState } from "react"
+import validator from 'validator';
 
 const SignUpForm = () => 
 {
@@ -18,6 +19,13 @@ const SignUpForm = () =>
             if (!email.trim() || !username.trim() || !password.trim())
             {
                 alert("Fields cannot be blank");
+                return;
+            }
+
+            if (validator.isEmail(username))
+            {
+                alert("Username can not be in the form of a valid email");
+                return;
             }
 
             return;
