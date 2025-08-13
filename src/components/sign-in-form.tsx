@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useState, useContext } from "react"
+import { UserContext } from '../contexts/user.context.tsx'
 
 const SignInForm = () => 
 {
@@ -9,14 +10,30 @@ const SignInForm = () =>
 
     const [formInput, setFormInput] = useState<FormInput>({username: '', password: '',}) 
     const { username, password } = formInput;
+    
+    const [errorMessage, setErrorMessage] = useState<string>('');
 
-    const handleFormSubmit = (e: React.FormEvent): void => 
+    const { login } = useContext(UserContext);
+
+    const handleFormSubmit = async (e: React.FormEvent): void => 
     {
         e.preventDefault();
 
         if (!username.trim() || !password.trim())
         {
-            alert("Fields cannot be blank");
+            setErrorMessage("Fields cannot be blank");
+            return;
+        }
+
+        const result = await login(username, password);
+
+        if (result === 'true')
+        {
+            setFormInput({username: '', password: ''});
+        }
+        else if (result !== 'false')
+        {
+            setErrorMessage(result);
         }
 
         return;
@@ -44,6 +61,7 @@ const SignInForm = () =>
                     <input 
                         name="username" 
                         type="text" 
+                        autoComplete="username"
                         value={username} 
                         onChange={updateFormInput} 
                         required 
@@ -57,6 +75,7 @@ const SignInForm = () =>
                     <input 
                         name="password" 
                         type="password" 
+                        autoComplete="current-password"
                         value={password} 
                         onChange={updateFormInput} 
                         required 
@@ -64,6 +83,8 @@ const SignInForm = () =>
                         className='w-full bg-gray-800 text-white px-4 py-2 rounded-md border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500'
                     />
                 </div>
+
+                {errorMessage !== '' && <p className='text-red-400 text-sm font-medium mt-1 mb-2 text-center'>{errorMessage}</p>}
 
                 <button 
                     type="submit"

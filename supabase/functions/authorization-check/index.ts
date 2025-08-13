@@ -17,38 +17,70 @@ type queryResult =
 }
 
 Deno.serve(async (req) => {
-  const { username } = await req.json()
-  const { data , error } = await supabase
-    .from("Usernames")
-    .select("user:auth.users ( email )")
-    .eq("username", username)
-    .limit(1)
-    .maybeSingle();
 
-  if (error)
+  const corsHeaders = {
+    "Access-Control-Allow-Origin": "http://localhost:5173",
+    "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization"
+  };
+
+  //Handle preflight request
+  if (req.method === "OPTIONS")
   {
       return new Response(
-        JSON.stringify({error: error.message}),
-        { status: 500, headers: { "Content-Type": "application/json" } },
-      );
-  }
-
-  if (!data)
-  {
-      return new Response(
-        JSON.stringify({error: "User not found"}),
-        { status: 404, headers: { "Content-Type": "application/json" }}
+        null,
+        {
+            status: 204,
+            headers: corsHeaders
+        }
       )
   }
 
-  const finalData: queryResult = {
-    email: data.user.email,
-  }
+  try 
+  {
+    const { username } = await req.json()
 
-  return new Response(
-    JSON.stringify(finalData),
-    { headers: { "Content-Type": "application/json" } },
-  )
+    const { data , error } = await supabase
+      .from("username_and_email")
+      .select("email")
+      .eq("username", username)
+      .limit(1)
+      .maybeSingle();
+
+    if (error)
+    {
+        return new Response(
+          JSON.stringify({error: error.message}),
+          { status: 500, headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "http://localhost:5173", } },
+        );
+    }
+
+    if (!data)
+    {
+        return new Response(
+          JSON.stringify({error: "User not found"}),
+          { status: 404, headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "http://localhost:5173", }}
+        )
+    }
+
+    console.log(data);
+
+    const finalData: queryResult = {
+      email: data.email,
+    }
+
+    return new Response(
+      JSON.stringify(finalData),
+      { headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "http://localhost:5173", } },
+    )  
+  } catch (err) 
+  {
+    return new Response(JSON.stringify({ error: `Invalid JSON body (${err.message})` }), {
+    status: 400,
+    headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "http://localhost:5173" },
+    });
+  }
+  
 })
 
 /* To invoke locally:

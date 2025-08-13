@@ -1,5 +1,6 @@
-import { useState } from "react"
+import { useState, useContext } from "react"
 import validator from 'validator';
+import { UserContext } from '../contexts/user.context.tsx'
 
 const SignUpForm = () => 
 {
@@ -11,21 +12,31 @@ const SignUpForm = () =>
     
         const [formInput, setFormInput] = useState<FormInput>({email: '', username: '', password: '',}) 
         const { email, username, password } = formInput;
+        const { signup } = useContext(UserContext);
+
+        const [errorMessage, setErrorMessage] = useState<string>('');
     
-        const handleFormSubmit = (e: React.FormEvent): void => 
+        const handleFormSubmit = async (e: React.FormEvent): void => 
         {
             e.preventDefault();
 
             if (!email.trim() || !username.trim() || !password.trim())
             {
-                alert("Fields cannot be blank");
+                setErrorMessage("Fields cannot be blank");
                 return;
             }
 
             if (validator.isEmail(username))
             {
-                alert("Username can not be in the form of a valid email");
+                setErrorMessage("Username can not be in the form of a valid email");
                 return;
+            }
+
+            const result = await signup(username, email, password);
+
+            if (result)
+            {
+                setFormInput({email: '', username: '', password: ''});
             }
 
             return;
@@ -54,6 +65,7 @@ const SignUpForm = () =>
                         name="email" 
                         type="email" 
                         value={email} 
+                        autoComplete="email"
                         onChange={updateFormInput} 
                         required
                         className='w-full bg-gray-800 text-white px-4 py-2 rounded-md border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500'
@@ -66,6 +78,7 @@ const SignUpForm = () =>
                         name="username" 
                         type="text" 
                         value={username} 
+                        autoComplete="username"
                         onChange={updateFormInput} 
                         required 
                         minLength={2}
@@ -78,6 +91,7 @@ const SignUpForm = () =>
                     <input 
                         name="password" 
                         type="password" 
+                        autoComplete="current-password"
                         value={password} 
                         onChange={updateFormInput} 
                         required 
@@ -85,6 +99,8 @@ const SignUpForm = () =>
                         className='w-full bg-gray-800 text-white px-4 py-2 rounded-md border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500'
                     />
                 </div>
+
+                {errorMessage !== '' && <p className='text-red-400 text-sm font-medium mt-1 mb-2 text-center'>{errorMessage}</p>}
 
                 <button 
                     type="submit"

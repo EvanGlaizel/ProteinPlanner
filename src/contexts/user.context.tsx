@@ -27,15 +27,16 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
 {
     const [currentUser, setCurrentUser] = useState<null | User>(null)
 
-    const signup = async (name: string, email: string, password: string): Promise<void> => 
+    const signup = async (name: string, email: string, password: string): Promise<bool> => 
     {
-        const { data, error } = await supabase.auth.signUp({email, password})
+
+        const { data, error } = await supabase.auth.signUp({email: email, password: password});
         const newUserId = data?.user?.id;
 
         if (error || !newUserId)
         {
             console.error("Sign up error: ", error.message)
-            return;
+            return false;
         }
 
         const { nameError } = await supabase.from("Usernames").insert({id: newUserId, username: name})
@@ -43,13 +44,14 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
         if (nameError)
         {
             console.error("Error adding username to the database: ", nameError.message)
-            return;
+            return false;
         }
 
         setCurrentUser({ name, email });
+        return true;
     }
 
-    const login = async (name: string, password: string): Promise<void> => 
+    const login = async (name: string, password: string): Promise<string> => 
     {
         let email = "";
         let username = "";
@@ -58,11 +60,12 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
         {
             //The user entered an email - Log them in with an email
             const { data, error } = await supabase.auth.signInWithPassword({ email: name, password});
-            
+
             if (error || !data?.user)
             {
                 console.error("Login error: ", error?.message || "No user returned")
-                return;
+
+                return error?.message || "Could not login. Please try again later";
             }
 
             email = data.user.email;
@@ -74,7 +77,7 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
             if (usernameError || !usernameObj)
             {
                 console.error("Email login error: ", usernameError?.message);
-                return;
+                return 'false';
             }
 
             username = usernameObj.username || ""
@@ -98,7 +101,12 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
                 const errorText = await response.text();
                 console.error("Login error: ", errorText);
 
-                return;
+                if (response.status === 404)
+                {
+                    return "Invalid Login Credentials";
+                }
+
+                return String(JSON.parse(errorText).error);
             }
 
             //Log them in with the found email
@@ -107,15 +115,15 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
             if (!resolvedEmail || !validator.isEmail(resolvedEmail))
             {
                 console.error("Invalid email received from edge function");
-                return;
+                return 'false';
             }
 
-            const { loginData, loginError } = await supabase.auth.signInWithPassword({ email: resolvedEmail, password});
+            const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({ email: resolvedEmail, password});
 
             if (loginError || !loginData?.user)
             {
                 console.error("Login error: ", loginError?.message || "No user returned");
-                return;
+                return 'false';
             }
 
             //User has successfully logged into their account with their username
@@ -125,10 +133,11 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
         if (!username || !email)
         {
             console.error("Login failed: missing username or email");
-            return;
+            return 'Invalid Login Credentials';
         }
 
         setCurrentUser({ username, email });
+        return 'true';
     }
 
     const logout = () => 
