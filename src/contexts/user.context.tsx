@@ -7,6 +7,8 @@ type userContextType = {
     signup: (name: string, email: string, password: string) => void;
     login: (name: string, password: string) => void;
     logout: () => void;
+    dailyMacros: DailyMacros;
+    setDailyMacros: React.Dispatch<React.SetStateAction<DailyMacros>>;
 }
 
 type EdgeFunctionResponse = {
@@ -15,9 +17,25 @@ type EdgeFunctionResponse = {
 }
 
 type User = {
+    id: string,
     name: string,
     email: string
 };
+
+type Meal = {
+    name: string,
+    calories: number,
+    protein: number,
+    carbs: number,
+    fats: number
+}
+
+type DailyMacros = {
+    calories: number,
+    protein: number,
+    carbs: number,
+    fats: number
+}
 
 type UserProps = { children: React.ReactNode };
 
@@ -26,8 +44,9 @@ export const UserContext = createContext<userContextType | undefined>(undefined)
 export const UserProvider: React.FC<UserProps> = ( {children}) => 
 {
     const [currentUser, setCurrentUser] = useState<null | User>(null)
+    const [dailyMacros, setDailyMacros] = useState<DailyMacros>({calories: 0, protein: 0, carbs: 0, fats: 0})
 
-    const signup = async (name: string, email: string, password: string): Promise<bool> => 
+    const signup = async (name: string, email: string, password: string): Promise<boolean> => 
     {
 
         const { data, error } = await supabase.auth.signUp({email: email, password: password});
@@ -47,7 +66,7 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
             return false;
         }
 
-        setCurrentUser({ name, email });
+        setCurrentUser({ id:newUserId, name, email });
         return true;
     }
 
@@ -55,6 +74,7 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
     {
         let email = "";
         let username = "";
+        let id = "";
 
         if (validator.isEmail(name))
         {
@@ -71,7 +91,7 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
             email = data.user.email;
 
             //User has successfuly logged into their account with their email. Fetch their username from the database
-            const id = data?.user?.id;
+            id = data?.user?.id;
             const { data: usernameObj, error: usernameError } = await supabase.from("Usernames").select("username").eq("id", id).single();
 
             if (usernameError || !usernameObj)
@@ -119,7 +139,8 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
             }
 
             const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({ email: resolvedEmail, password});
-
+ 
+            //Check if the login was successful
             if (loginError || !loginData?.user)
             {
                 console.error("Login error: ", loginError?.message || "No user returned");
@@ -127,6 +148,7 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
             }
 
             //User has successfully logged into their account with their username
+            id = loginData.user.id;
             email = loginData.user.email;
         }
 
@@ -136,8 +158,29 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
             return 'Invalid Login Credentials';
         }
 
-        setCurrentUser({ username, email });
+        setCurrentUser({ username, email, id });
+        fetchDailyMacros(id);
         return 'true';
+    }
+
+    const fetchDailyMacros = async (id: string): void =>
+    {
+        let macros = { calories: 0, protein: 0, carbs: 0, fats: 0 };
+
+        const { data, error } = await supabase.from("total_daily_macros").select("total_calories, total_protein, total_fat, total_carbs").eq("user_id", id).single();
+
+        if (error || !data)
+        {
+            console.error("Error fetching daily macros: ", error?.message || "No data returned");
+            return;
+        }
+
+        macros.calories = data.total_calories || 0;
+        macros.protein = data.total_protein || 0;
+        macros.carbs = data.total_carbs || 0;
+        macros.fats = data.total_fat || 0;
+
+        setDailyMacros(macros);
     }
 
     const logout = () => 
@@ -150,7 +193,9 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
         currentUser,
         signup,
         login,
-        logout
+        logout,
+        dailyMacros,
+        setDailyMacros
     }
 
     return (
