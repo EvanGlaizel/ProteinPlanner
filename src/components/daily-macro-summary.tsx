@@ -1,26 +1,51 @@
 import Macro from './macro.tsx'
 
-import { useEffect, useContext } from 'react';
+import { useEffect, useContext, useState } from 'react';
 import { UserContext } from '../contexts/user.context.tsx';
+
+import { GiButter } from "react-icons/gi";
+import { TbMeat } from "react-icons/tb";
+import { CiWheat } from "react-icons/ci";
+
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 const DailyMacroSummary = () => 
 {
-    const { dailyMacros } = useContext(UserContext);
+    const { dailyMacros, calorieGoal } = useContext(UserContext);
+    const [caloriePercentage, setCaloriePercentage] = useState<number>(0);
+
+    useEffect(() => {
+
+        if (calorieGoal && dailyMacros.protein && calorieGoal > 0) 
+        {
+            setCaloriePercentage(Math.round((dailyMacros.protein / calorieGoal) * 100));
+        }
+        
+
+    }, [dailyMacros.protein, calorieGoal]);
 
     return (
-        <div>
-            <h1>Protein Planner</h1>
+        <div className="w-full bg-slate-800 text-gray-200 p-5 rounded-lg shadow-xl flex items-center justify-between py-8">
 
-            <div>
-                <Macro title="Protein" icon={<h1>TEST ICON</h1>} macro={dailyMacros.protein} />
-                <Macro title="Fat" icon={<h1>TEST ICON</h1>} macro={dailyMacros.fetchDailyMacros} />
-                <Macro title="Carbs" icon={<h1>TEST ICON</h1>} macro={dailyMacros.carbs} />
-            </div>
+            <h1 className="!text-8xl font-bold text-white mx-20">Protein Planner</h1>
 
-            <div>
-                <h2>Calories</h2>
-                <p>{dailyMacros.calories}</p>
+            <div className="flex flex-row items-center justify-between">
+                <div className="flex items-center gap-x-10">
+                    <Macro title="Protein" icon={<TbMeat/>} macro={dailyMacros.protein} />
+                    <Macro title="Fat" icon={<GiButter/>} macro={dailyMacros.fats} />
+                    <Macro title="Carbs" icon={<CiWheat/>} macro={dailyMacros.carbs} />
+                </div>
+
+                <div className="w-50 h-50 mx-10 mb-5">
+                    <CircularProgressbar value={caloriePercentage} text={`${dailyMacros.calories}`} styles={buildStyles({ strokeLinecap: 'round', textSize: '28px', textColor: '#FFFFFF', pathColor: '#38bdf8', trailColor: '#e5e7eb', pathTransitionDuration: 0.5})} />
+
+                        <h2 className="absolute text-xl text-white right-[126px] top-[220px]">Calories</h2>
+                    
+                    <p className="text-center text-xs text-gray-300 tracking-wider uppercase mt-2">{`Goal: ${calorieGoal} kcals`}</p>
+                </div>
             </div>
+            
         </div>
     )
 }

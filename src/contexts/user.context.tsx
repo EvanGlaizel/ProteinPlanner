@@ -9,6 +9,8 @@ type userContextType = {
     logout: () => void;
     dailyMacros: DailyMacros;
     setDailyMacros: React.Dispatch<React.SetStateAction<DailyMacros>>;
+    calorieGoal: number | null;
+    setCalorieGoal: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 type EdgeFunctionResponse = {
@@ -45,6 +47,7 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
 {
     const [currentUser, setCurrentUser] = useState<null | User>(null)
     const [dailyMacros, setDailyMacros] = useState<DailyMacros>({calories: 0, protein: 0, carbs: 0, fats: 0})
+    const [calorieGoal, setCalorieGoal] = useState<number | null>(2500);
 
     const signup = async (name: string, email: string, password: string): Promise<boolean> => 
     {
@@ -195,7 +198,9 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
         login,
         logout,
         dailyMacros,
-        setDailyMacros
+        setDailyMacros,
+        calorieGoal,
+        setCalorieGoal
     }
 
     return (
