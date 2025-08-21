@@ -10,7 +10,7 @@ const Macro: React.FC<MacroSummaryType> = ({ title, icon, macro }) =>
     return (
         <div className="flex items-center gap-x-3">
 
-            <div className="text-sky-400 text-6xl">
+            <div className="text-sky-300 text-6xl">
                 {icon}
             </div>
 

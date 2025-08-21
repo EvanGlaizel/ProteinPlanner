@@ -11,6 +11,8 @@ type userContextType = {
     setDailyMacros: React.Dispatch<React.SetStateAction<DailyMacros>>;
     calorieGoal: number | null;
     setCalorieGoal: React.Dispatch<React.SetStateAction<number | null>>;
+    dailyMeals: Meal[];
+    fetchDailyMeals: (date: Date, id: string) => Promise<void>;
 }
 
 type EdgeFunctionResponse = {
@@ -24,7 +26,7 @@ type User = {
     email: string
 };
 
-type Meal = {
+export type Meal = {
     name: string,
     calories: number,
     protein: number,
@@ -163,6 +165,7 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
 
         setCurrentUser({ username, email, id });
         fetchDailyMacros(id);
+        fetchDailyMeals(new Date(), id);
         return 'true';
     }
 
@@ -186,6 +189,26 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
         setDailyMacros(macros);
     }
 
+    //Query the database for the user's daily meals
+    const fetchDailyMeals = async (date: Date, id:string) => 
+    {
+        const { data, error } = await supabase.from("macros").select("*").eq("user_id", id).eq("day", date.toISOString().split('T')[0]);
+
+        if (error || !data)
+        {
+            console.error("Error fetching daily meals: ", error?.message || "No data returned");
+            return null;
+        }
+
+        setDailyMeals(data.map((meal: any) => ({
+            name: meal.name,
+            calories: meal.calories,
+            protein: meal.protein,
+            carbs: meal.carbs,
+            fats: meal.fats
+        })));
+    }
+
     const logout = () => 
     {
         setCurrentUser(null);
@@ -200,7 +223,9 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
         dailyMacros,
         setDailyMacros,
         calorieGoal,
-        setCalorieGoal
+        setCalorieGoal,
+        dailyMeals: [],
+        fetchDailyMeals
     }
 
     return (

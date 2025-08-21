@@ -7,9 +7,9 @@ const Dashboard = () =>
     return (
         <>
             <DailyMacroSummary/>
-            {//<MealSummary/>
-            //<QuickSettings/>
-        }
+            <MealSummary/>
+            { //<QuickSettings/> 
+            }
         </>
     )
 }

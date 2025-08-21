@@ -42,7 +42,7 @@ const DailyMacroSummary = () =>
 
                         <h2 className="absolute text-xl text-white right-[126px] top-[220px]">Calories</h2>
                     
-                    <p className="text-center text-xs text-gray-300 tracking-wider uppercase mt-2">{`Goal: ${calorieGoal} kcals`}</p>
+                    <p className="text-center text-m text-gray-300 tracking-wider uppercase mt-3">{`Goal: ${calorieGoal} kcals`}</p>
                 </div>
             </div>
             
