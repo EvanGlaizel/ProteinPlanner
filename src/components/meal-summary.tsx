@@ -6,16 +6,18 @@ import "react-day-picker/style.css";
 import { UserContext } from "../contexts/user.context.tsx";
 
 import Meal from './meal.tsx'
+import NewMealButton from './new-meal-button.tsx'
+import NewMealForm from './new-meal-form.tsx'
 
 const MealSummary = () => 
 {
     const [currentDate, setCurrentDate] = useState<Date | undefined>(new Date());
     const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
+    const [showNewMealForm, setShowNewMealForm] = useState<boolean>(false);
 
     const { dailyMeals, fetchDailyMeals, currentUser } = useContext(UserContext);
 
-    //Date selector
-    //Meal list for a given day
+    const onClose = () => setShowNewMealForm(false);
 
     return (
         <div className="flex flex-col justify-center items-center gap-y-4 p-4 bg-gray-800 rounded-lg">
@@ -31,8 +33,8 @@ const MealSummary = () =>
                         setCurrentDate(date)
                         currentUser && fetchDailyMeals(date, currentUser.id);
                         setShowDatePicker(false);
-                        required
                     }}
+                    required
                   /> 
             }
 
@@ -41,7 +43,9 @@ const MealSummary = () =>
                     <Meal key={key} meal={meal}/>
                 ))}
 
-                { /* Next, create the add new meal button. Also create the Meal component */ }
+                <NewMealButton onClick={() => setShowNewMealForm(true)}/>
+
+                { showNewMealForm && <NewMealForm onClose={onClose} currentDate={new Date()}/> }
 
             </div>
 

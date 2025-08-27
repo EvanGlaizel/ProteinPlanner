@@ -1,8 +1,11 @@
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient.ts'
 import  validator from "validator";
 
+import type { Session } from '@supabase/supabase-js';
+
 type userContextType = {
+    session: Session | null;
     currentUser: User | null;
     signup: (name: string, email: string, password: string) => void;
     login: (name: string, password: string) => void;
@@ -13,6 +16,7 @@ type userContextType = {
     setCalorieGoal: React.Dispatch<React.SetStateAction<number | null>>;
     dailyMeals: Meal[];
     fetchDailyMeals: (date: Date, id: string) => Promise<void>;
+    addMealToDatabase: (meal: Meal, date: Date, userId: string) => Promise<boolean>;
 }
 
 type EdgeFunctionResponse = {
@@ -47,9 +51,68 @@ export const UserContext = createContext<userContextType | undefined>(undefined)
 
 export const UserProvider: React.FC<UserProps> = ( {children}) => 
 {
+    const [session, setSession] = useState<Session | null>(null);
     const [currentUser, setCurrentUser] = useState<null | User>(null)
     const [dailyMacros, setDailyMacros] = useState<DailyMacros>({calories: 0, protein: 0, carbs: 0, fats: 0})
     const [calorieGoal, setCalorieGoal] = useState<number | null>(2500);
+    const [dailyMeals, setDailyMeals] = useState<Meal[]>([]);
+
+    //Ensure session is persisted on page reload
+    useEffect(() => 
+        {
+            const currentSession = supabase.auth.getSession().then(({ data: { session } }) => {
+                setSession(session);
+
+                if (session?.user)
+                {
+                    fetchUserProfile(session.user.id, session.user.email).then((user) => {
+                        if (user) 
+                        {
+                            setCurrentUser(user);
+                            fetchDailyMacros(user.id);
+                            fetchDailyMeals(new Date(), user.id);
+                        }
+                    });
+                }
+            });
+    
+            const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+                setSession(session);
+
+                if (session?.user)
+                {
+                    fetchUserProfile(session.user.id, session.user.email).then((user) => {
+                        if (user)
+                        {
+                            setCurrentUser(user);
+                            fetchDailyMacros(user.id);
+                            fetchDailyMeals(new Date(), user.id);
+                        }
+                    })
+                }
+                else
+                {
+                    setCurrentUser(null);
+                }
+            });
+    
+            return () => {
+                listener?.subscription.unsubscribe();
+            }
+        }, [])
+
+    const fetchUserProfile = async (id: string, email: string): Promise<User | null> =>
+    {
+        const { data, error } = await supabase.from("Usernames").select("username").eq("id", id).single();
+
+        if (error || !data)
+        {
+            console.error("Error fetching user profile: ", error?.message || "No data returned");
+            return null;
+        }
+
+        return { id: id, name: data.username, email: email };
+    }
 
     const signup = async (name: string, email: string, password: string): Promise<boolean> => 
     {
@@ -171,6 +234,12 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
 
     const fetchDailyMacros = async (id: string): void =>
     {
+        if (!currentUser || !currentUser.id)
+        {
+            console.log("Error: User must be logged in to fetch daily macros")
+            return;
+        }
+
         let macros = { calories: 0, protein: 0, carbs: 0, fats: 0 };
 
         const { data, error } = await supabase.from("total_daily_macros").select("total_calories, total_protein, total_fat, total_carbs").eq("user_id", id).single();
@@ -192,6 +261,12 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
     //Query the database for the user's daily meals
     const fetchDailyMeals = async (date: Date, id:string) => 
     {
+        if (!currentUser || !currentUser.id)
+        {
+            console.log("Error: User must be logged in to fetch meals")
+            return;
+        }
+
         const { data, error } = await supabase.from("macros").select("*").eq("user_id", id).eq("day", date.toISOString().split('T')[0]);
 
         if (error || !data)
@@ -207,6 +282,50 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
             carbs: meal.carbs,
             fats: meal.fats
         })));
+    }
+
+    const addMealToDatabase = async(meal: Meal, date: Date, userId: string): Promise<boolean> =>
+    {
+        
+        if (!currentUser || !currentUser.id)
+        {
+            console.log("Error: User must be logged in to add a meal")
+            return false;
+        }
+
+        if (!date || !meal || !meal.name || meal.calories < 0 || meal.protein < 0 || meal.carbs < 0 || meal.fats < 0)
+        {
+            console.error("Error: Invalid meal or date");
+            return false;
+        }
+
+        const { error } = await supabase.from("macros").insert( [{
+            user_id: currentUser.id,
+            meal_name: meal.name,
+            calories: meal.calories,
+            protein: meal.protein,
+            carbs: meal.carbs,
+            fat: meal.fats,
+            day: date.toISOString().split('T')[0]
+        }] )
+
+        if (error)
+        {
+            console.error("Error adding meal to database: ", error.message);
+            return false;
+        }
+
+        //Also add the meal to the local state
+        setDailyMeals((prevMeals) => [...prevMeals, meal]);
+
+        setDailyMacros((prevMacros) => ({
+            calories: prevMacros.calories + meal.calories,
+            protein: prevMacros.protein + meal.protein,
+            carbs: prevMacros.carbs + meal.carbs,
+            fats: prevMacros.fats + meal.fats })
+        );
+
+        return true;
     }
 
     const logout = () => 
@@ -225,7 +344,8 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
         calorieGoal,
         setCalorieGoal,
         dailyMeals: [],
-        fetchDailyMeals
+        fetchDailyMeals,
+        addMealToDatabase,
     }
 
     return (
