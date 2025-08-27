@@ -4,13 +4,12 @@ import { UserContext } from '../contexts/user.context.tsx'
 
 type NewMealFormProps = {
     onClose: () => void,
-    currentDate: Date,
     mealInfo?: Meal
 }
 
-const NewMealForm: React.FC<NewMealFormProps> = ({ onClose, currentDate, mealInfo }) => 
+const NewMealForm: React.FC<NewMealFormProps> = ({ onClose, mealInfo }) => 
 {
-    const { currentUser, addMealToDatabase } = useContext(UserContext);
+    const { currentUser, addMealToDatabase, currentDate } = useContext(UserContext);
 
     const [ mealInput, setMealInput ] = useState<Meal>(mealInfo ? mealInfo : {
         name: '',

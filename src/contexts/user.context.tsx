@@ -17,6 +17,8 @@ type userContextType = {
     dailyMeals: Meal[];
     fetchDailyMeals: (date: Date, id: string) => Promise<void>;
     addMealToDatabase: (meal: Meal, date: Date, userId: string) => Promise<boolean>;
+    currentDate: Date;
+    setCurrentDate: React.Dispatch<React.SetStateAction<Date>>;
 }
 
 type EdgeFunctionResponse = {
@@ -56,6 +58,7 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
     const [dailyMacros, setDailyMacros] = useState<DailyMacros>({calories: 0, protein: 0, carbs: 0, fats: 0})
     const [calorieGoal, setCalorieGoal] = useState<number | null>(2500);
     const [dailyMeals, setDailyMeals] = useState<Meal[]>([]);
+    const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
     //Ensure session is persisted on page reload
     useEffect(() => 
@@ -69,8 +72,6 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
                         if (user) 
                         {
                             setCurrentUser(user);
-                            fetchDailyMacros(user.id);
-                            fetchDailyMeals(new Date(), user.id);
                         }
                     });
                 }
@@ -85,8 +86,6 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
                         if (user)
                         {
                             setCurrentUser(user);
-                            fetchDailyMacros(user.id);
-                            fetchDailyMeals(new Date(), user.id);
                         }
                     })
                 }
@@ -100,6 +99,16 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
                 listener?.subscription.unsubscribe();
             }
         }, [])
+
+    //When the user or selected date changes, fetch their data
+    useEffect(() =>
+    {
+        if (currentUser && currentUser.id)
+        {
+            fetchDailyMacros(currentDate, currentUser.id);
+            fetchDailyMeals(currentDate, currentUser.id);
+        }
+    }, [currentUser, currentDate]);
 
     const fetchUserProfile = async (id: string, email: string): Promise<User | null> =>
     {
@@ -227,12 +236,10 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
         }
 
         setCurrentUser({ username, email, id });
-        fetchDailyMacros(id);
-        fetchDailyMeals(new Date(), id);
         return 'true';
     }
 
-    const fetchDailyMacros = async (id: string): void =>
+    const fetchDailyMacros = async (date: Date, id: string): void =>
     {
         if (!currentUser || !currentUser.id)
         {
@@ -242,18 +249,22 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
 
         let macros = { calories: 0, protein: 0, carbs: 0, fats: 0 };
 
-        const { data, error } = await supabase.from("total_daily_macros").select("total_calories, total_protein, total_fat, total_carbs").eq("user_id", id).single();
+        const { data, error } = await supabase.from("total_daily_macros").select("total_calories, total_protein, total_fat, total_carbs").eq("user_id", id).eq("day", date.toISOString().split('T')[0]).maybeSingle();
 
-        if (error || !data)
+        if (error)
         {
-            console.error("Error fetching daily macros: ", error?.message || "No data returned");
+            console.error("Error fetching daily macros: ", error.message);
             return;
         }
 
-        macros.calories = data.total_calories || 0;
-        macros.protein = data.total_protein || 0;
-        macros.carbs = data.total_carbs || 0;
-        macros.fats = data.total_fat || 0;
+        if (data)
+        {
+            console.log("Fetched daily macros: ", data);
+            macros.calories = data.total_calories;
+            macros.protein = data.total_protein;
+            macros.carbs = data.total_carbs;
+            macros.fats = data.total_fat;
+        }
 
         setDailyMacros(macros);
     }
@@ -269,19 +280,27 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
 
         const { data, error } = await supabase.from("macros").select("*").eq("user_id", id).eq("day", date.toISOString().split('T')[0]);
 
-        if (error || !data)
+        if (error)
         {
-            console.error("Error fetching daily meals: ", error?.message || "No data returned");
+            console.error("Error fetching daily meals: ", error.message);
             return null;
         }
 
-        setDailyMeals(data.map((meal: any) => ({
+        if (data)
+        {
+            setDailyMeals(data.map((meal: any) => ({
             name: meal.name,
             calories: meal.calories,
             protein: meal.protein,
             carbs: meal.carbs,
             fats: meal.fats
-        })));
+            })));
+        }
+        else
+        {
+            console.log("No meals found for the selected date");
+            setDailyMeals([]);
+        }
     }
 
     const addMealToDatabase = async(meal: Meal, date: Date, userId: string): Promise<boolean> =>
@@ -346,6 +365,8 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
         dailyMeals: [],
         fetchDailyMeals,
         addMealToDatabase,
+        currentDate,
+        setCurrentDate
     }
 
     return (

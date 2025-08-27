@@ -17,7 +17,7 @@ const DailyMacroSummary = () =>
 
     useEffect(() => {
 
-        if (calorieGoal && dailyMacros.calories && calorieGoal > 0) 
+        if (calorieGoal != null && dailyMacros.calories != null && calorieGoal > 0) 
         {
             setCaloriePercentage(Math.round((dailyMacros.calories / calorieGoal) * 100));
         }
@@ -38,7 +38,7 @@ const DailyMacroSummary = () =>
                 </div>
 
                 <div className="w-50 h-50 mx-10 mb-5">
-                    <CircularProgressbar value={caloriePercentage} text={`${dailyMacros.calories}`} styles={buildStyles({ strokeLinecap: 'round', textSize: '28px', textColor: '#FFFFFF', pathColor: '#38bdf8', trailColor: '#e5e7eb', pathTransitionDuration: 0.5})} />
+                        <CircularProgressbar value={caloriePercentage} text={`${dailyMacros.calories}`} styles={buildStyles({ strokeLinecap: 'round', textSize: '28px', textColor: '#FFFFFF', pathColor: '#38bdf8', trailColor: '#e5e7eb', pathTransitionDuration: 0.5})} />
 
                         <h2 className="absolute text-xl text-white right-[126px] top-[248px]">Calories</h2>
                     

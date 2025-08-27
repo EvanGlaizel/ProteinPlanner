@@ -11,11 +11,10 @@ import NewMealForm from './new-meal-form.tsx'
 
 const MealSummary = () => 
 {
-    const [currentDate, setCurrentDate] = useState<Date | undefined>(new Date());
     const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
     const [showNewMealForm, setShowNewMealForm] = useState<boolean>(false);
 
-    const { dailyMeals, fetchDailyMeals, currentUser } = useContext(UserContext);
+    const { dailyMeals, fetchDailyMeals, currentUser, currentDate, setCurrentDate } = useContext(UserContext);
 
     const onClose = () => setShowNewMealForm(false);
 
@@ -23,7 +22,7 @@ const MealSummary = () =>
         <div className="flex flex-col justify-center items-center gap-y-4 p-4 bg-gray-800 rounded-lg">
             
                 <button className="text-white hover:text-sky-200" onClick={() => setShowDatePicker(!showDatePicker)}>
-                    {currentDate?.toLocaleDateString()} 
+                    {currentDate.toLocaleDateString()} 
                 </button> 
             
             { showDatePicker &&  <DayPicker
@@ -45,7 +44,7 @@ const MealSummary = () =>
 
                 <NewMealButton onClick={() => setShowNewMealForm(true)}/>
 
-                { showNewMealForm && <NewMealForm onClose={onClose} currentDate={new Date()}/> }
+                { showNewMealForm && <NewMealForm onClose={onClose}/> }
 
             </div>
 

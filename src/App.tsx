@@ -1,4 +1,4 @@
-import {Routes, Route} from 'react-router-dom'
+import {Routes, Route, Navigate} from 'react-router-dom'
 
 import Navigation from './routes/navigation'
 import Login from './routes/login'
@@ -9,6 +9,7 @@ function App() {
   return (
     <Routes>
         <Route path="/" element={<Navigation/>}>
+          <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="login" element={<Login/>}/>
           <Route path="dashboard" element={<Dashboard/>}/>
         </Route>
