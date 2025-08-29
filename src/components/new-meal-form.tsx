@@ -68,36 +68,39 @@ const NewMealForm: React.FC<NewMealFormProps> = ({ onClose, mealInfo }) =>
     }
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center">
-            <div className="bg-gray-600 p-6 rounded-lg shadow-lg w-96">
-                <h2 className="text-2xl font-bold mb-4">Add New Meal</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-5 backdrop-blur-sm p-4">
+            <div className="bg-slate-800 text-white p-8 rounded-lg shadow-2xl w-full max-w-md">
+                <h2 className="text-3xl font-bold mb-6">Add New Meal</h2>
                 <form onSubmit={onSubmit} className="flex flex-col gap-y-4">
                     <div>
-                        <label className='block text-white font-medium mb-2'>Meal Name</label>
-                        <input name="name" type="text" placeholder="ex: Dinner" value={mealInput.name} onChange={updateFormInput} className="p-2 border border-gray-800 rounded"/>
+                        <label className='block text-sm font-medium text-gray-300 mb-2'>Meal Name</label>
+                        <input name="name" type="text" placeholder="ex: Dinner" value={mealInput.name} onChange={updateFormInput} className="w-full bg-slate-700 border border-slate-600 rounded-md p-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500"/>
                     </div>
                     
-                    <div>
-                        <label className='block text-white font-medium mb-2'>Calories</label>
-                        <input name="calories" min="0" type="number" value={mealInput.calories} onChange={updateFormInput}required className="p-2 border border-gray-800 rounded"/>
-                    </div>
-                    <div>
-                        <label className='block text-white font-medium mb-2'>Protein (g)</label>
-                        <input name="protein" min="0" type="number" value={mealInput.protein} onChange={updateFormInput} className="p-2 border border-gray-800 rounded"/>
-                    </div>
-                    <div>
-                        <label className='block text-white font-medium mb-2'>Carbs (g)</label>
-                        <input name="carbs" min="0" type="number" value={mealInput.carbs} onChange={updateFormInput} className="p-2 border border-gray-800 rounded"/>
-                    </div>
-                    <div>
-                        <label className='block text-white font-medium mb-2'>Fats (g)</label>
-                        <input name="fats" min="0" type="number" value={mealInput.fats} onChange={updateFormInput} className="p-2 border border-gray-800 rounded"/>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className='block text-sm font-medium text-gray-300 mb-2'>Calories</label>
+                            <input name="calories" min="0" type="number" value={mealInput.calories} onChange={updateFormInput}required className="w-full bg-slate-700 border border-slate-600 rounded-md p-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500"/>
+                        </div>
+                        <div>
+                            <label className='block text-sm font-medium text-gray-300 mb-2'>Protein (g)</label>
+                            <input name="protein" min="0" type="number" value={mealInput.protein} onChange={updateFormInput} className="w-full bg-slate-700 border border-slate-600 rounded-md p-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500"/>
+                        </div>
+                        <div>
+                            <label className='block text-sm font-medium text-gray-300 mb-2'>Carbs (g)</label>
+                            <input name="carbs" min="0" type="number" value={mealInput.carbs} onChange={updateFormInput} className="w-full bg-slate-700 border border-slate-600 rounded-md p-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500"/>
+                        </div>
+                        <div>
+                            <label className='block text-sm font-medium text-gray-300 mb-2'>Fats (g)</label>
+                            <input name="fats" min="0" type="number" value={mealInput.fats} onChange={updateFormInput} className="w-full bg-slate-700 border border-slate-600 rounded-md p-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500"/>
+                        </div>
                     </div>
 
-                    <div className="flex justify-around gap-x-4">
-                        <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Add Meal</button>
-                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+                    <div className="flex gap-x-4 mt-6">
+                        <button type="submit" className="flex-1 px-5 py-2 bg-slate-600 rounded-md hover:bg-slate-700 transition-colors font-semibold">Add Meal</button>
+                        <button type="button" onClick={onClose} className="flex-1 px-5 py-2 bg-sky-500 text-white rounded-md hover:bg-sky-600 transition-colors font-semibold">Cancel</button>
                     </div>
+                    
                 </form>
             </div>
         </div>

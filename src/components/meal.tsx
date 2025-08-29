@@ -7,14 +7,20 @@ type MealType = {
 const Meal: React.FC<MealType> = ({ meal }) =>
 {
     return (
-        <div>
-            <h2>{meal.name}</h2>
-            <p>{`Calories: ${meal.calories}`}</p>
-            <p>{`Protein: ${meal.protein}g`}</p>
-            <p>{`Carbs: ${meal.carbs}g`}</p>
-            <p>{`Fat: ${meal.fats}g`}</p>
-            <button>Edit</button>
-            <button>Delete</button>
+        <div className="bg-slate-800 rounded-lg shadow-lg p-6 flex flex-col h-full text-gray-300">
+            <h2 className="text-2xl font-bold text-white mb-4 truncate">{meal.name}</h2>
+            
+            <div className="space-y-2 mb-6">
+                <p><span className="font-semibold text-white">{`Calories: ${meal.calories}`}</span></p>
+                <p><span className="font-semibold text-white">{`Protein: ${meal.protein}g`}</span></p>
+                <p><span className="font-semibold text-white">{`Carbs: ${meal.carbs}g`}</span></p>
+                <p><span className="font-semibold text-white">{`Fat: ${meal.fats}g`}</span></p>
+            </div>
+
+            <div className="mt-auto flex gap-x-4">
+                <button className="w-full text-center bg-slate-600 hover:bg-slate-700 transition-colors text-white font-bold py-2 px-4 rounded-md">Edit</button>
+                <button className="w-full text-center bg-red-600 hover:bg-red-700 transition-colors text-white font-bold py-2 px-4 rounded-md">Delete</button>
+            </div>
         </div>
     )
 }

@@ -288,12 +288,12 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
 
         if (data)
         {
-            setDailyMeals(data.map((meal: any) => ({
-            name: meal.name,
+            setDailyMeals(data.map((meal: Meal) => ({
+            name: meal.meal_name,
             calories: meal.calories,
             protein: meal.protein,
             carbs: meal.carbs,
-            fats: meal.fats
+            fats: meal.fat
             })));
         }
         else
@@ -362,7 +362,7 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
         setDailyMacros,
         calorieGoal,
         setCalorieGoal,
-        dailyMeals: [],
+        dailyMeals,
         fetchDailyMeals,
         addMealToDatabase,
         currentDate,
