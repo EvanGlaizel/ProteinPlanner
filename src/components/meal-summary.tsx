@@ -26,7 +26,7 @@ const MealSummary = () =>
             
             <div className="relative mb-8 flex justify-between">
 
-                <h2 className="bg-slate-700 text-white font-semibold py-2 px-4 rounded-md text-4xl">Meals</h2>
+                <h2 className="bg-slate-700 text-white font-semibold py-2 px-4 rounded-md text-5xl">Meals</h2>
 
                 <div className="relative">
                     <button className="flex items-center gap-x-3 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 px-4 rounded-md transition-colors" onClick={() => setShowDatePicker(!showDatePicker)}>
