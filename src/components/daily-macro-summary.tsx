@@ -37,7 +37,7 @@ const DailyMacroSummary = () =>
                     <Macro title="Carbs" icon={<CiWheat/>} macro={dailyMacros.carbs} />
                 </div>
 
-                <div className="h-30 w-30 md:w-50 md:h-50 mx-5 md:mx-10 mb-5 relative">
+                <div className="h-30 w-30 md:w-50 md:h-50 mx-1 sm:mx-5 md:mx-10 mb-5 relative">
                         <CircularProgressbar value={caloriePercentage} text={`${dailyMacros.calories}`} styles={buildStyles({ strokeLinecap: 'round', textSize: '28px', textColor: '#FFFFFF', pathColor: '#38bdf8', trailColor: '#e5e7eb', pathTransitionDuration: 1.5})} />
 
                         <h2 className="absolute text-xl text-white right-[65px] top-[124px] invisible md:visible">Calories</h2>

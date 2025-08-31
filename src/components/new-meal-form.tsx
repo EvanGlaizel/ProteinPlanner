@@ -125,7 +125,7 @@ const NewMealForm: React.FC<NewMealFormProps> = ({ onClose, mealInfo }) =>
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex md:flex-row sm:flex-col items-center md:justify-center  backdrop-blur-3xl p-4 sm:overflow-auto sm:items-start md:items-center">
+        <div className="fixed inset-0 z-50 flex md:flex-row flex-col items-center md:justify-center  backdrop-blur-3xl p-4 sm:overflow-auto sm:items-start md:items-center">
             <div className="bg-slate-800 text-white p-8 rounded-lg shadow-2xl w-full max-w-md m-10 border-gray-600 border-2">
                 <h2 className="text-3xl font-bold mb-6">{mealInfo ? 'Edit Meal' : 'Add New Meal'}</h2>
                 <form onSubmit={onSubmit} className="flex flex-col gap-y-4">
