@@ -16,17 +16,18 @@ const MealSummary = () =>
 {
     const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
     const [showNewMealForm, setShowNewMealForm] = useState<boolean>(false);
+    const [mealFormInfo, setMealFormInfo] = useState<Meal | null>(null);
 
     const { dailyMeals, fetchDailyMeals, currentUser, currentDate, setCurrentDate } = useContext(UserContext);
 
     const onClose = () => setShowNewMealForm(false);
 
     return (
-        <div className="p-4 sm:p-6 lg:p-8 w-[75%] bg-slate-700 m-5 rounded-xl min-h-[calc(100vh-420px)] ">
+        <div className="p-4 sm:p-6 lg:p-8 w-auto bg-slate-700 m-5 rounded-xl min-h-[calc(100vh-420px)] ">
             
             <div className="relative mb-8 flex justify-between">
 
-                <h2 className="bg-slate-700 text-white font-semibold py-2 px-4 rounded-md text-5xl">Meals</h2>
+                <h2 className="bg-slate-700 text-white font-semibold py-2 px-4 rounded-md text-5xl">{currentUser ? 'Meals' : 'Login to track meals'}</h2>
 
                 <div className="relative">
                     <button className="flex items-center gap-x-3 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 px-4 rounded-md transition-colors" onClick={() => setShowDatePicker(!showDatePicker)}>
@@ -68,13 +69,19 @@ const MealSummary = () =>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-5 gap-6">
 
-                {dailyMeals && dailyMeals.map((meal, key) => (
-                    <Meal key={key} meal={meal}/>
+                {dailyMeals && dailyMeals.map((meal) => (
+                    <Meal key={meal.id} meal={meal} onEdit={() => {
+                        setMealFormInfo(meal);
+                        setShowNewMealForm(true);
+                    }}/>
                 ))}
 
-                <NewMealButton onClick={() => setShowNewMealForm(true)}/>
+                {currentUser && <NewMealButton onClick={() => {
+                    setMealFormInfo(null);
+                    setShowNewMealForm(true);
+                }}/>}
 
-                { showNewMealForm && <NewMealForm onClose={onClose}/> }
+                { showNewMealForm && <NewMealForm onClose={onClose} mealInfo={mealFormInfo}/> }
 
             </div>
 

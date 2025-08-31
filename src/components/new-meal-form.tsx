@@ -11,7 +11,7 @@ type NewMealFormProps = {
 
 const NewMealForm: React.FC<NewMealFormProps> = ({ onClose, mealInfo }) => 
 {
-    const { currentUser, addMealToDatabase, currentDate } = useContext(UserContext);
+    const { currentUser, addMealToDatabase, editMealInDatabase, currentDate } = useContext(UserContext);
 
     const [ mealInput, setMealInput ] = useState<Meal>(mealInfo ? mealInfo : {
         name: '',
@@ -35,7 +35,7 @@ const NewMealForm: React.FC<NewMealFormProps> = ({ onClose, mealInfo }) =>
 
         e.preventDefault();
 
-        const result = addMealToDatabase(mealInput, currentDate, currentUser.id);
+        const result = mealInfo ? editMealInDatabase(mealInfo, mealInput) : addMealToDatabase(mealInput, currentDate, currentUser.id);
 
         if (result)
         {
@@ -125,7 +125,7 @@ const NewMealForm: React.FC<NewMealFormProps> = ({ onClose, mealInfo }) =>
     return (
         <div className="fixed inset-0 z-50 flex md:flex-row sm:flex-col items-center md:justify-center  backdrop-blur-3xl p-4 sm:overflow-auto sm:items-start md:items-center">
             <div className="bg-slate-800 text-white p-8 rounded-lg shadow-2xl w-full max-w-md m-10 border-gray-600 border-2">
-                <h2 className="text-3xl font-bold mb-6">Add New Meal</h2>
+                <h2 className="text-3xl font-bold mb-6">{mealInfo ? 'Edit Meal' : 'Add New Meal'}</h2>
                 <form onSubmit={onSubmit} className="flex flex-col gap-y-4">
                     <div>
                         <label className='block text-sm font-medium text-gray-300 mb-2'>Meal Name</label>
@@ -152,7 +152,7 @@ const NewMealForm: React.FC<NewMealFormProps> = ({ onClose, mealInfo }) =>
                     </div>
 
                     <div className="flex gap-x-4 mt-6">
-                        <button type="submit" className="flex-1 px-5 py-2 bg-slate-600 rounded-md hover:bg-slate-700 transition-colors font-semibold">Add Meal</button>
+                        <button type="submit" className="flex-1 px-5 py-2 bg-slate-600 rounded-md hover:bg-slate-700 transition-colors font-semibold">{mealInfo ? 'Confirm Edit' : 'Add Meal'}</button>
                         <button type="button" onClick={onClose} className="flex-1 px-5 py-2 bg-sky-500 text-white rounded-md hover:bg-sky-600 transition-colors font-semibold">Cancel</button>
                     </div>
                     

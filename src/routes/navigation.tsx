@@ -13,7 +13,7 @@ const Navigation = () =>
     // User context
     const userContext = useContext(UserContext);
     if (!userContext) { throw new Error("Error: userContext is undefined") }
-    const { currentUser } = userContext;
+    const { currentUser, logout } = userContext;
 
     const toggleCart = (): void => 
     {
@@ -32,13 +32,13 @@ const Navigation = () =>
                 {currentUser == null ? 
                                         <Link className="text-2xl font-semibold mx-5 !text-gray-300 hover:!text-blue-400 transition-colors duration-200" to="/login">Sign In</Link>
                                         :
-                                        <CgProfile onClick={toggleCart} className='text-6xl text-white p-1 rounded-full hover:text-blue-400 hover:cursor-pointer transition-all duration-200 ml-auto'/>
+                                        <button className="!text-2xl font-semibold mx-5 !text-gray-300 hover:!text-blue-400 transition-colors duration-200 !bg-transparent !border-none cursor-pointer" onClick={logout}>Sign Out</button>
                 }
             </div>
             
         </nav>
         
-        {isProfileClicked && <ProfileDropdown/>}
+        { /* isProfileClicked && <ProfileDropdown/> */ }
 
         <Outlet/>
     </>
