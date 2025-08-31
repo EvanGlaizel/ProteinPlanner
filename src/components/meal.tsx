@@ -1,16 +1,16 @@
 import { useContext } from 'react';
 import { UserContext } from '../contexts/user.context.tsx';
 
-import type { Meal } from '../contexts/user.context.tsx'
+import type { Meal as MealData } from '../contexts/user.context.tsx'
 
 type MealType = {
-    meal: Meal
+    meal: MealData,
     onEdit: () => void
 }
 
 const Meal: React.FC<MealType> = ({ meal, onEdit }) =>
 {
-    const { deleteMealFromDatabase } = useContext(UserContext);
+    const { deleteMealFromDatabase } = useContext(UserContext)!;
 
     return (
         <div className="bg-slate-800 rounded-lg shadow-lg p-6 flex flex-col h-full text-gray-300">

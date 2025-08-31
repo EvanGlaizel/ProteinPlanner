@@ -6,17 +6,16 @@ import { useNavigate } from "react-router-dom";
 import type { Session } from '@supabase/supabase-js';
 
 type userContextType = {
-    session: Session | null;
     currentUser: User | null;
-    signup: (name: string, email: string, password: string) => void;
-    login: (name: string, password: string) => void;
-    logout: () => void;
+    signup: (name: string, email: string, password: string) => Promise<boolean>;
+    login: (name: string, password: string) => Promise<string>;
+    logout: () => Promise<void>;
     dailyMacros: DailyMacros;
     calorieGoal: number | null;
     setCalorieGoal: React.Dispatch<React.SetStateAction<number | null>>;
     dailyMeals: Meal[];
     fetchDailyMeals: (date: Date, id: string) => Promise<void>;
-    addMealToDatabase: (meal: Meal, date: Date, userId: string) => Promise<boolean>;
+    addMealToDatabase: (meal: Meal, date: Date) => Promise<boolean>;
     deleteMealFromDatabase: (meal: Meal) => Promise<boolean>;
     editMealInDatabase: (oldMeal: Meal, updatedMeal: Meal) => Promise<boolean>;
     currentDate: Date;
@@ -56,7 +55,7 @@ export const UserContext = createContext<userContextType | undefined>(undefined)
 
 export const UserProvider: React.FC<UserProps> = ( {children}) => 
 {
-    const [session, setSession] = useState<Session | null>(null);
+    const [_session, setSession] = useState<Session | null>(null);
     const [currentUser, setCurrentUser] = useState<null | User>(null);
     const [calorieGoal, setCalorieGoal] = useState<number | null>(2500);
     const [dailyMeals, setDailyMeals] = useState<Meal[]>([]);
@@ -67,12 +66,12 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
     //Ensure session is persisted on page reload
     useEffect(() => 
         {
-            const currentSession = supabase.auth.getSession().then(({ data: { session } }) => {
+            supabase.auth.getSession().then(({ data: { session } }) => {
                 setSession(session);
 
                 if (session?.user)
                 {
-                    fetchUserProfile(session.user.id, session.user.email).then((user) => {
+                    fetchUserProfile(session.user.id, session.user.email || '').then((user) => {
                         if (user) 
                         {
                             setCurrentUser(user);
@@ -86,7 +85,7 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
 
                 if (session?.user)
                 {
-                    fetchUserProfile(session.user.id, session.user.email).then((user) => {
+                    fetchUserProfile(session.user.id, session.user.email || '').then((user) => {
                         if (user)
                         {
                             setCurrentUser(user);
@@ -143,11 +142,11 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
 
         if (error || !newUserId)
         {
-            console.error("Sign up error: ", error.message)
+            console.error("Sign up error: ", error?.message || "No user ID returned");
             return false;
         }
 
-        const { nameError } = await supabase.from("Usernames").insert({id: newUserId, username: name})
+        const { error: nameError } = await supabase.from("Usernames").insert({id: newUserId, username: name})
 
         if (nameError)
         {
@@ -178,10 +177,10 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
                 return error?.message || "Could not login. Please try again later";
             }
 
-            email = data.user.email;
+            email = data?.user?.email || '';
 
             //User has successfuly logged into their account with their email. Fetch their username from the database
-            id = data?.user?.id;
+            id = data?.user?.id || '';
             const { data: usernameObj, error: usernameError } = await supabase.from("Usernames").select("username").eq("id", id).single();
 
             if (usernameError || !usernameObj)
@@ -238,8 +237,8 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
             }
 
             //User has successfully logged into their account with their username
-            id = loginData.user.id;
-            email = loginData.user.email;
+            id = loginData?.user?.id || '';
+            email = loginData?.user?.email || '';
         }
 
         if (!username || !email)
@@ -248,7 +247,7 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
             return 'Invalid Login Credentials';
         }
 
-        setCurrentUser({ username, email, id });
+        setCurrentUser({ name: username, email, id });
         navigate('/dashboard');
         return 'true';
     }
@@ -297,12 +296,12 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
         if (error)
         {
             console.error("Error fetching daily meals: ", error.message);
-            return null;
+            return;
         }
 
         if (data)
         {
-            setDailyMeals(data.map((meal: Meal) => ({
+            setDailyMeals(data.map((meal: any) => ({
             id: meal.meal_id,
             name: meal.meal_name,
             calories: meal.calories,
@@ -318,7 +317,7 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
         }
     }
 
-    const addMealToDatabase = async(meal: Meal, date: Date, userId: string): Promise<boolean> =>
+    const addMealToDatabase = async(meal: Meal, date: Date): Promise<boolean> =>
     {
         
         if (!currentUser || !currentUser.id)

@@ -9,6 +9,7 @@ import { FaCalendarAlt } from "react-icons/fa";
 import { UserContext } from "../contexts/user.context.tsx";
 
 import Meal from './meal.tsx'
+import type { Meal as MealType } from '../contexts/user.context.tsx'
 import NewMealButton from './new-meal-button.tsx'
 import NewMealForm from './new-meal-form.tsx'
 
@@ -16,9 +17,9 @@ const MealSummary = () =>
 {
     const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
     const [showNewMealForm, setShowNewMealForm] = useState<boolean>(false);
-    const [mealFormInfo, setMealFormInfo] = useState<Meal | null>(null);
+    const [mealFormInfo, setMealFormInfo] = useState<MealType | null>(null);
 
-    const { dailyMeals, fetchDailyMeals, currentUser, currentDate, setCurrentDate } = useContext(UserContext);
+    const { dailyMeals, fetchDailyMeals, currentUser, currentDate, setCurrentDate } = useContext(UserContext)!;
 
     const onClose = () => setShowNewMealForm(false);
 
@@ -69,7 +70,7 @@ const MealSummary = () =>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-5 gap-6">
 
-                {dailyMeals && dailyMeals.map((meal) => (
+                {dailyMeals && dailyMeals.map((meal: MealType) => (
                     <Meal key={meal.id} meal={meal} onEdit={() => {
                         setMealFormInfo(meal);
                         setShowNewMealForm(true);

@@ -13,7 +13,7 @@ const SignInForm = () =>
     
     const [errorMessage, setErrorMessage] = useState<string>('');
 
-    const { login } = useContext(UserContext);
+    const { login } = useContext(UserContext)!;
 
     const handleFormSubmit = async (e: React.FormEvent): Promise<void> => 
     {

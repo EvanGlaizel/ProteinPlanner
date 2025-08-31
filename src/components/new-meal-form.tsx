@@ -6,14 +6,15 @@ import { supabase } from '../lib/supabaseClient.ts'
 
 type NewMealFormProps = {
     onClose: () => void,
-    mealInfo?: Meal
+    mealInfo: Meal | null
 }
 
 const NewMealForm: React.FC<NewMealFormProps> = ({ onClose, mealInfo }) => 
 {
-    const { currentUser, addMealToDatabase, editMealInDatabase, currentDate } = useContext(UserContext);
+    const { currentUser, addMealToDatabase, editMealInDatabase, currentDate } = useContext(UserContext)!;
 
     const [ mealInput, setMealInput ] = useState<Meal>(mealInfo ? mealInfo : {
+        id: '',
         name: '',
         calories: 0,
         protein: 0,
@@ -35,15 +36,15 @@ const NewMealForm: React.FC<NewMealFormProps> = ({ onClose, mealInfo }) =>
 
         e.preventDefault();
 
-        const result = mealInfo ? editMealInDatabase(mealInfo, mealInput) : addMealToDatabase(mealInput, currentDate, currentUser.id);
+        const result = mealInfo ? await editMealInDatabase(mealInfo, mealInput) : await addMealToDatabase(mealInput, currentDate);
 
-        if (result)
+        if (result === true)
         {
             onClose();
         }
         else
         {
-            console.error("Error adding meal to database");
+            console.error(mealInfo ? "Error editing meal" : "Error adding meal");
         }
         
         return;
@@ -98,6 +99,7 @@ const NewMealForm: React.FC<NewMealFormProps> = ({ onClose, mealInfo }) =>
             console.log("AI Response: ", data);
 
             setMealInput( { 
+                id: '',
                 name: data?.reply.meal_name || 'Meal',
                 calories: data?.reply.calories || 0,
                 protein: data?.reply.protein || 0,
@@ -106,16 +108,16 @@ const NewMealForm: React.FC<NewMealFormProps> = ({ onClose, mealInfo }) =>
             } );
             setAiInput('AI successfully responded! Edit the meal info if needed, then click "Add Meal"');
             
-        } catch (err) 
+        } catch (err: any) 
         {
-            console.error("Error fetching AI data: ", err.message);
+            console.error("Error fetching AI data: ", err?.message || "Error");
         }
 
         setIsLoading(false);
         return;    
     }
 
-    const updateAIFormInput = (e: React.ChangeEvent<HTMLInputElement>): void => 
+    const updateAIFormInput = (e: React.ChangeEvent<HTMLTextAreaElement>): void => 
     {
         const { value } = e.target;
 

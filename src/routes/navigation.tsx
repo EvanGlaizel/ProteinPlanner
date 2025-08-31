@@ -1,24 +1,24 @@
 import { Link, Outlet } from 'react-router-dom'
-import ProfileDropdown from '../components/profile-dropdown';
+//import ProfileDropdown from '../components/profile-dropdown';
 
-import { CgProfile } from "react-icons/cg";
-import { useState, useContext } from 'react';
+//import { CgProfile } from "react-icons/cg";
+import { /*useState,*/ useContext } from 'react';
 
 import { UserContext } from '../contexts/user.context';
 
 const Navigation = () => 
 {
-    const [isProfileClicked, setProfileClicked] = useState(false);
+    // const [isProfileClicked, setProfileClicked] = useState(false);
 
     // User context
     const userContext = useContext(UserContext);
     if (!userContext) { throw new Error("Error: userContext is undefined") }
     const { currentUser, logout } = userContext;
 
-    const toggleCart = (): void => 
-    {
-        setProfileClicked(!isProfileClicked);
-    }
+    // const toggleCart = (): void => 
+    // {
+    //     setProfileClicked(!isProfileClicked);
+    // }
 
   return (
     <>

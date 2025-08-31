@@ -12,7 +12,7 @@ const SignUpForm = () =>
     
         const [formInput, setFormInput] = useState<FormInput>({email: '', username: '', password: '',}) 
         const { email, username, password } = formInput;
-        const { signup } = useContext(UserContext);
+        const { signup } = useContext(UserContext)!;
 
         const [errorMessage, setErrorMessage] = useState<string>('');
     

@@ -12,7 +12,7 @@ import 'react-circular-progressbar/dist/styles.css';
 
 const DailyMacroSummary = () => 
 {
-    const { dailyMacros, calorieGoal } = useContext(UserContext);
+    const { dailyMacros, calorieGoal } = useContext(UserContext)!;
     const [caloriePercentage, setCaloriePercentage] = useState<number>(0);
 
     useEffect(() => {
