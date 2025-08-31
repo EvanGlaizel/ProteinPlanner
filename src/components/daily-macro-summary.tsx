@@ -28,7 +28,7 @@ const DailyMacroSummary = () =>
     return (
         <div className="w-full bg-slate-800 text-gray-200 pl-0 lg:p-5 rounded-lg shadow-xl flex items-center justify-start lg:justify-between py-8">
 
-            <h1 className="!text-4xl md:!text-6xl lg:!text-8xl font-bold text-white mx-8 lg:mx-20">Protein Planner</h1>
+            <h1 className="!text-4xl md:!text-6xl lg:!text-8xl font-bold text-white mx-3 md:mx-8 lg:mx-20">Protein Planner</h1>
 
             <div className="flex flex-row items-center justify-between">
                 <div className="flex items-start xl:items-center xl:gap-x-10 md:gap-4 flex-col  xl:flex-row">

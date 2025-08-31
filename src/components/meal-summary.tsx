@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
@@ -22,6 +22,20 @@ const MealSummary = () =>
     const { dailyMeals, fetchDailyMeals, currentUser, currentDate, setCurrentDate } = useContext(UserContext)!;
 
     const onClose = () => setShowNewMealForm(false);
+
+    useEffect(() => 
+    {
+        if (showNewMealForm) {
+            document.body.classList.add("overflow-hidden");
+        } else {
+            document.body.classList.remove("overflow-hidden");
+        }
+
+        // Clean up in case component unmounts
+        return () => {
+            document.body.classList.remove("overflow-hidden");
+        };
+    }, [showNewMealForm]);
 
     return (
         <div className="p-4 sm:p-6 lg:p-8 w-auto bg-slate-700 m-5 rounded-xl min-h-[calc(100vh-420px)] ">
