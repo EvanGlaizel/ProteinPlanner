@@ -40,7 +40,7 @@ const DailyMacroSummary = () =>
                 <div className="h-30 w-30 md:w-50 md:h-50 mx-5 md:mx-10 mb-5 relative">
                         <CircularProgressbar value={caloriePercentage} text={`${dailyMacros.calories}`} styles={buildStyles({ strokeLinecap: 'round', textSize: '28px', textColor: '#FFFFFF', pathColor: '#38bdf8', trailColor: '#e5e7eb', pathTransitionDuration: 1.5})} />
 
-                        <h2 className="absolute text-xl text-white right-[126px] top-[248px] invisible lg:visible">Calories</h2>
+                        <h2 className="absolute text-xl text-white right-[65px] top-[124px] invisible md:visible">Calories</h2>
                     
                     <p className="text-center text-m text-gray-300 tracking-wider uppercase mt-3">{`Goal: ${calorieGoal} kcals`}</p>
                 </div>
