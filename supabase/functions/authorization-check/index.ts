@@ -51,7 +51,7 @@ Deno.serve(async (req) => {
     {
         return new Response(
           JSON.stringify({error: error.message}),
-          { status: 500, headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "http://localhost:5173", } },
+          { status: 500, headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "https://proteinplanner.netlify.app", } },
         );
     }
 
@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
     {
         return new Response(
           JSON.stringify({error: "User not found"}),
-          { status: 404, headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "http://localhost:5173", }}
+          { status: 404, headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "https://proteinplanner.netlify.app", }}
         )
     }
 
@@ -71,13 +71,13 @@ Deno.serve(async (req) => {
 
     return new Response(
       JSON.stringify(finalData),
-      { headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "http://localhost:5173", } },
+      { headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*", } },
     )  
   } catch (err) 
   {
     return new Response(JSON.stringify({ error: `Invalid JSON body (${err.message})` }), {
     status: 400,
-    headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "http://localhost:5173" },
+    headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "https://proteinplanner.netlify.app" },
     });
   }
   

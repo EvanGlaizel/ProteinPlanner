@@ -25,7 +25,7 @@ const NewMealForm: React.FC<NewMealFormProps> = ({ onClose, mealInfo }) =>
     const [ isLoading, setIsLoading ] = useState<boolean>(false);
 
 
-    const onSubmit = async (e: React.FormEvent): void =>
+    const onSubmit = async (e: React.FormEvent): Promise<void> =>
     {
         if (!currentUser) 
         {
@@ -71,7 +71,7 @@ const NewMealForm: React.FC<NewMealFormProps> = ({ onClose, mealInfo }) =>
         }
     }
 
-    const onAISubmit = async (e: React.FormEvent): void =>
+    const onAISubmit = async (e: React.FormEvent): Promise<void> =>
     {
         if (!currentUser) 
         {

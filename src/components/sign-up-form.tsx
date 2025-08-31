@@ -16,7 +16,7 @@ const SignUpForm = () =>
 
         const [errorMessage, setErrorMessage] = useState<string>('');
     
-        const handleFormSubmit = async (e: React.FormEvent): void => 
+        const handleFormSubmit = async (e: React.FormEvent): Promise<void> => 
         {
             e.preventDefault();
 

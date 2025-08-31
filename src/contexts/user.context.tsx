@@ -284,7 +284,7 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
     // }
 
     //Query the database for the user's daily meals
-    const fetchDailyMeals = async (date: Date, id:string) => 
+    const fetchDailyMeals = async (date: Date, id:string): Promise<void> => 
     {
         if (!currentUser || !currentUser.id)
         {
@@ -415,7 +415,7 @@ export const UserProvider: React.FC<UserProps> = ( {children}) =>
         // );
     }
 
-    const logout = async () => 
+    const logout = async (): Promise<void> => 
     {
         await supabase.auth.signOut();
         navigate('/login');

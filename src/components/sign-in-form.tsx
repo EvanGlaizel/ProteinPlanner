@@ -15,7 +15,7 @@ const SignInForm = () =>
 
     const { login } = useContext(UserContext);
 
-    const handleFormSubmit = async (e: React.FormEvent): void => 
+    const handleFormSubmit = async (e: React.FormEvent): Promise<void> => 
     {
         e.preventDefault();
 

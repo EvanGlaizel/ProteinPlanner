@@ -9,7 +9,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 Deno.serve(async (req) => 
 {
   const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": "https://proteinplanner.netlify.app",
     "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey, x-client-info"
   };
