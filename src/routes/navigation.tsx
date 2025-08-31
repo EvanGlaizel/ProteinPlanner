@@ -25,7 +25,7 @@ const Navigation = () =>
         <nav className="w-full bg-gray-900 flex items-center py-4 px-6 shadow-md shadow-black/50 rounded-b-lg transition-colors duration-300 ease-in-out">
             <div className='flex flex-grow justify-start items-center gap-x-8 mx-5'>
                 <Link className="text-2xl font-semibold mx-5 !text-gray-300 hover:!text-blue-400 transition-colors duration-200" to="/dashboard">Dashboard</Link>
-                <Link className="text-2xl font-semibold mx-5 !text-gray-300 hover:!text-blue-400 transition-colors duration-200" to="/history">History</Link>
+                {/*<Link className="text-2xl font-semibold mx-5 !text-gray-300 hover:!text-blue-400 transition-colors duration-200" to="/history">History</Link>*/}
             </div>
 
             <div className="h-15 flex justify-end items-center">
